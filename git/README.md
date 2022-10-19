@@ -47,6 +47,7 @@ git add .
 ### agregar etiquetas
 usar `-a` para etiquetas complejas
 si no se especifica el código de confirmación se aplica al último commit
+
     git tag tagName(ej : v1.0) condeCommitConfimation
 
 ### subir etiqueta al remoto
