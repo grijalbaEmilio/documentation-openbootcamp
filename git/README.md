@@ -24,9 +24,9 @@ guardar cambios de configuración local
     git init .
 
 ### agregar cambios al staging
-``git add directrory``
-``git add *.extensionFile``
-``git add .``
+```git add directrory```
+```git add *.extensionFile```
+```git add .```
 
 ### Renombrar rama actual 
     git branch -M newNameBranch
