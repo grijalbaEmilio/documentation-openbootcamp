@@ -35,6 +35,14 @@ git add *.extensionFile
 ```
 git add . 
 ```
+
+### descartar cambios que no se han agregado al staging
+se usa `-n` para probrar que se eliminaría
+se usa `-f` para eliminar
+se usa `-i` para eliminar de forma interactiva
+
+    git clear -n
+
 ### comprometer cambios
     git commit -am "your message"
 
@@ -46,6 +54,7 @@ git add .
 
 ### agregar etiquetas
 usar `-a` para etiquetas complejas
+usar `-m` para agregar comentario
 si no se especifica el código de confirmación se aplica al último commit
 
     git tag tagName(ej : v1.0) condeCommitConfimation
@@ -57,7 +66,8 @@ si no se especifica el código de confirmación se aplica al último commit
     git checkout tagOrBranchName
 
 ### revertir cambios a nivel de commit
-se crea un nuevo coomit con los cambios de un commit anterior, obviando los que estan en medio.
+se crea un nuevo commit con los cambios de un commit anterior, obviando los que estan en medio.
+usat `-n` para no crear el commit automáticamente
 
     git revert codeCommitConfirmation 
 
@@ -65,9 +75,16 @@ se crea un nuevo coomit con los cambios de un commit anterior, obviando los que 
 <img src="./img/revert.png" alt="no img"/>
 
 ### regresar a un commit quitando del historial los de enmedio
+se puede usar `commitCode` o `HEAD~numReversePosition` para indicar a que comit resetear
+posterior al reset se debe hacer push com `-f` para forzar el atraso en commits
+
 con `--soft` se quita el historial de los commits pero no se eliminan archivos
 
     git reset --soft HEAD~numReversePosition
+
+con `--mixed` es el por defecto trabaja en el staging y saca del área del stagin los cambios
+
+    git reset --mixed
 
 con `--hard` se quita el historial de los commits y se eliminan archivos
 
@@ -101,8 +118,13 @@ crearla desde un commit específico
 
     git branch nameNewBranch codeOldCommit
 
+### eliminar rama
+
+    git branch -d nameBranch
+
 ### moverse entre ramas
 usar `-b` en caso de que no exista la rama para crearla
+usar commitCode para moverse a un commit en concreto
 
     git checkout nameBranch
 
@@ -145,20 +167,96 @@ para fucionar un intervalo abierto
 
     git cherry-pick commitCode..commitCode
 
+### ver commits de una rama
+usar `'*'` para ver todos los commits
 
-
-
+    git log --branches='nameRama'
 
 # Remoto
 
 ### Agregar repositorio remoto
     git remote add origin http://github.com/yourUrl
 
-### Empujar por primera vez una rama al repositorio remoto
-    git push -u origin yourNameBranch
+### Cambiar URL de repositorio remoto
+    git remote set-url origin http://github.com/newUrl
 
+### Empujar por primera vez una rama al repositorio remoto
 `-u` se usa para indicar que ésta será la rama por defecto, de tal modo que posteriormente pueda hacerce 
 únicamente `git push` para actualizar esta rama.
 
+    git push -u origin yourNameBranch
+
+
 ### Traer cambios del repositorio remoto 
     git pull
+
+### saber los cambios sin traerlos
+se obtienen los metadatos más no trae los cambios
+
+    git fetch
+
+# .gitignore File
+
+comentarios
+
+    # your comments
+
+carpetas
+
+    folderName/forlderName
+
+archivos
+
+    folder/fileName
+    fileName
+
+archivos de cierta extensión
+
+    *.extension
+
+un archivo con esa extension que si hará push
+
+    !fileName.extension
+
+
+# git flow
+
+<img src="./img/gitflow-workflow.jpg" alt="no img"/>
+<img src="./img/gitflow.jpg" alt="no img"/>
+
+### iniciar git flow
+    git flow init 
+
+## feature branch
+todas las funciones nuevas deben desarrollarse en una rama de este tipo
+
+### desarrollar nuevas funcionalidades
+    git flow feature start feature_name
+
+### desarrollo de la funcionalidad
+elimina la rama de feature
+
+    git flow feature finish feature_name
+
+## release branch
+es una rama de pre producción, se usa para sulucionar posibles bugs antes de producción
+
+### pasar de develop a release 
+    git flow release start 0.1
+
+### finalizar la rama release
+hace un merge a `main`/production y se debe poner etiqueta
+
+    git flow release finish '0.1'
+
+## hotfix branch
+se usa para sulucionar bugs directamente de la rama de producción/`main`
+
+### iniciar rama hotfix
+    git flow hotfix start hotfix_1
+
+
+### finalizar la rama hotfix
+se fuciona con la rama `main` creando la etiqueta y se fuciona con la rama develop
+
+    git flow hottfix finish hotfix_1
