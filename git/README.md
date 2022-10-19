@@ -57,6 +57,7 @@ si no se especifica el código de confirmación se aplica al último commit
 
 ### revertir cambios a nivel de commit
 se crea un nuevo coomit con los cambios de un commit anterior, obviando los que estan en medio.
+
     git revert codeCommitConfirmation 
 
  
