@@ -65,9 +65,11 @@ se crea un nuevo coomit con los cambios de un commit anterior, obviando los que 
 
 ### regresar a un commit quitando del historial los de enmedio
 con `--soft` se quita el historial de los commits pero no se eliminan archivos
+
     git reset --soft HEAD~numReversePosition
 
 con `--hard` se quita el historial de los commits y se eliminan archivos
+
     git reset --hard HEAD~numReversePosition
 
 <img src="./img/reset.webp" alt="no img">
