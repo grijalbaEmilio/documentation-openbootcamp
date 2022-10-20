@@ -257,7 +257,7 @@ class tesOnlyRead{
         console.log(b);  
     }
 }
-
+```
 en métodos
 
 en propiedades
