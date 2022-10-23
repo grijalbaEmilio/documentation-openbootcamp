@@ -117,3 +117,73 @@ public class Main {
 # Spring Boot
 Se genera el proyecto dese [SpringInitialzr](https://start.spring.io/) <br/>
 se agregan las dependncia necesarias.
+
+## recomedadas 
+
+* `Spring Data JPA` para la intefración con BD
+* `para la BD` (se usa en proyectos de peueba)
+* `String Web` para montar la aplicación rest
+* `Spring Boot DevTools` una especie de nodemon(en js)
+
+<hr/>
+
+`NOTA` si se presentan problemas en el pom.xml `<buil/>` agregamos la version en `<plugin/>` `<version>2.7.5</version>`
+<hr/>
+
+## configuración de `Spring boot Devtools`
+configurar auto guardar en IJ
+
+<img src="./img/IJconfig1.png" alt="noimg" />
+
+configurar auto crear para cada proyecto spring boot
+
+<img src="./img/IJconfig2.png" alt="noimg" />
+
+## anotaciones / decoradores 
+
+## a clases
+para indicar que los objetos de una clase se almacenarán en base de datos
+
+	@Entity
+
+para indicar el nombre de la tabla
+
+	@Table(name = "books_tbl")
+
+para servicios rest con JSON
+
+	@RestController
+
+## a interfaces 
+para indicar que será un repositorio 
+
+	@Repository
+
+además se extiende de JpaRepository
+
+	extends JpaRepository<Class, ClassIsd>
+
+## métodos
+para generar endPoint 
+
+	 @GetMapping("/path")
+	
+	 @PostMapping("/path")
+
+## a atributos
+para indicar que un atributo será id
+
+	@Id
+
+para indicar la estrategia de generación del id
+
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
+## parámetros 
+para obtner los valores de petiiones(@GetMapping("/hello/{id}"))
+
+	@PathVariable
+
+para obtener un body
+
+	@RequestBody	 
