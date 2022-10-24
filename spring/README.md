@@ -182,8 +182,185 @@ para indicar la estrategia de generación del id
 ## parámetros 
 para obtner los valores de petiiones(@GetMapping("/hello/{id}"))
 
-	@PathVariable
+	@PathVariable Long id
 
 para obtener un body
 
-	@RequestBody	 
+	@RequestBody Class instance
+
+para obtener cabeceras
+
+    @RequestHeader HttpHeaders headers
+
+
+# Responses
+no encontrado 
+
+    ResponseEntity.notfound().build();
+
+encontrado 
+
+    ResponseEntity.ok(istanceEntity);
+
+# Documentación con swagger | esta dependencia me lanza un error para spirng `2.7.5`, se debe estar en la versión `2.5.5` para que funcione con normalidad
+agregamos la dependencia [SpringFox Boot Starter](https://mvnrepository.com/artifact/io.springfox/springfox-boot-starter/3.0.0)
+```xml
+<!-- https://mvnrepository.com/artifact/io.springfox/springfox-boot-starter -->
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-boot-starter</artifactId>
+    <version>3.0.0</version>
+</dependency>
+
+```
+
+creamos el archivo de configuración Swagger `com/example/package/config/SwaggerConfig.java`
+
+```java
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+
+import java.util.Collections;
+
+/**
+ * Configuración Swagger para la generación de documentación de la API REST
+ *
+ * HTML: http://localhost:8081/swagger-ui/
+ * JSON: http://localhost:8081/v2/api-docs
+ */
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public Docket api(){
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiDetails())
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+    private ApiInfo apiDetails(){
+        return new ApiInfo("Spring Boot Book API REST",
+                "Library Api rest docs",
+                "1.0",
+                "http://www.google.com",
+                new Contact("Alan", "http://www.google.com", "alan@example.com"),
+                "MIT",
+                "http://www.google.com",
+                Collections.emptyList());
+    }
+
+}
+```
+
+podrémos encontrar la documentación en `localhost:5000/swagger-ui/`
+
+para ignorar un endpoint en la documentación
+
+    @ApiIgnore
+
+para agregar un comentario adicional al endpoint
+
+    @ApiOperation("use this endpoint for update uno boook")
+
+
+# Testing | Junit
+
+se puede generar desde el método, click derecho > generate > test
+
+comprobar acierto booleano
+
+    assertTrue(expresion);
+
+comprobar igualdad
+
+    assertEquals(value1, value2);
+
+## testear controlador
+
+se agrega el decorador springBootTest a la clase
+
+    @SpringBootTest(webEnviroment = SpringBootTest.WebEnviroment.RANDOM_PORT)
+
+configurar los test controller
+
+```java
+private TestRestTemplate testRestTemplate;
+
+    @Autowired
+    private RestTemplateBuilder restTemplateBuilder;
+
+    @LocalServerPort
+    private int port;
+
+    @BeforeEach
+    void setUp() {
+        restTemplateBuilder = restTemplateBuilder.rootUri("http://localhost:" + port);
+        testRestTemplate = new TestRestTemplate(restTemplateBuilder);
+    }
+```    
+
+un ejemplo de test controller
+
+```java
+@Test
+void findAll() {
+    ResponseEntity<Book[]> response  =
+        testRestTemplate.getForEntity("/api/books", Book[].class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(200, response.getStatusCodeValue());
+
+    List<Book> books = Arrays.asList(response.getBody());
+    System.out.println(books.size());
+
+}
+
+@Test
+void findOneById() {
+
+    ResponseEntity<Book> response  =
+            testRestTemplate.getForEntity("/api/books/1", Book.class);
+
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+}
+
+@Test
+void create() {
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+
+    String json = """
+            {
+                "title": "Libro creado desde Spring Test",
+                "author": "Yuval Noah",
+                "pages": 650,
+                "price": 19.99,
+                "releaseDate": "2019-12-01",
+                "online": false
+            }
+            """;
+
+    HttpEntity<String> request = new HttpEntity<>(json,headers);
+
+    ResponseEntity<Book> response = testRestTemplate.exchange("/api/books", HttpMethod.POST, request, Book.class);
+
+    Book result = response.getBody();
+
+    assertEquals(1L, result.getId());
+    assertEquals("Libro creado desde Spring Test", result.getTitle());
+
+}
+```
