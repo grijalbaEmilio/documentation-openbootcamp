@@ -278,6 +278,11 @@ para agregar un comentario adicional al endpoint
 
 se puede generar desde el método, click derecho > generate > test
 
+a cada método tesster se le agrega el decorador 
+
+    @Test
+
+
 comprobar acierto booleano
 
     assertTrue(expresion);
@@ -338,7 +343,7 @@ void findOneById() {
 @Test
 void create() {
 
-    HttpHeaders headers = new HttpHeaders();
+    HttpHeaders headers = new HttpHeaders();    
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
@@ -363,4 +368,103 @@ void create() {
     assertEquals("Libro creado desde Spring Test", result.getTitle());
 
 }
+```
+
+# Spring security
+
+se añase la dependencia `Spring Security` al crear el proyecto.
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+para configurar usuario y contraseña en el archivo `system.properties`
+
+    spring.security.user.name= luis
+    spring.security.user.password=12345    
+
+se crea la clase `WebSecurityConfig` a nivel del main
+
+```java
+package com.example.yourPackage;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
+
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.GET).hasRole("USER")
+                // .antMatchers(HttpMethod.GET, "/api/laptops/{id}").hasRole("USER")
+                .antMatchers(HttpMethod.POST).hasRole("USER")
+                .antMatchers(HttpMethod.PUT).hasAnyRole("USER", "ADMIN")
+                .antMatchers(HttpMethod.DELETE).hasRole("ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .and()
+                .httpBasic()
+                .and()
+                .csrf().disable() // disable for use post, put and delte methods
+        ;
+    }
+
+    @Bean
+    public HttpFirewall looseHttpFirewall(){
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowBackSlash(true); // permite "\" en la request http
+        firewall.setAllowSemicolon(true); // permite ";" en la request http
+        firewall.setAllowUrlEncodedSlash(true);
+        // ...
+        return firewall;
+    }
+
+    // genera nuevo usuario y contraseña
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+        auth.inMemoryAuthentication()
+                .passwordEncoder(passwordEncoder())
+                .withUser("luis").password(passwordEncoder().encode("password")).roles("USER")
+                .and()
+                .withUser("carla").password(passwordEncoder().encode("password")).roles("ADMIN", "USER");
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
+
+//    Expose the UserDetailsService as a Bean
+//    @Bean
+//    @Override
+//    public UserDetailsService userDetailsServiceBean() throws Exception {
+//        return super.userDetailsServiceBean();
+//    }
+}
+
 ```
