@@ -1,0 +1,6 @@
+sqlplus
+sqlldr user/password
+control = *.ctl
+
+config control file
+characterset UTF8

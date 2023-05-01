@@ -1,0 +1,71 @@
+# REgistros Anidados
+Estructura de datos cupuesta
+
+```sql
+
+CREATE OR REPLACE PROCEDURE RegContacto
+AS
+-- DEFINIR REGISTRO ANIDADO
+-- DE ESPECÍFICO A LO GENERAL
+
+TYPE RegT IS RECORD(
+MiCo VARCHAR2(15),
+MiFo VARCHAR2(10)
+);
+
+TYPE RegG IS RECORD(
+Datos ESTUDIANTES%ROWTYPE,
+Contacto RegT
+);
+
+-- DEFINE VARIABLE DE INSTANCIA
+MiReg RegG;
+
+BEGIN
+FOR I IN (SELECT ID, ROUND(DBMS_RANDOM.VALUE(3117123464,3217123464), 0) Cel FROM ESTUDIANTES )
+LOOP
+Mireg.Datos.id := I.id;
+Mireg.Contacto.MiCo := I.Cel;
+dBMS_OUTPUT.PUT_LINE(MiReg.Datos.id||' '||' -- '||MiReg.Contacto.MiCo);
+END LOOP;
+END RegContacto;
+/
+SHOW ERRORS;
+```
+
+```sql
+CREATE OR REPLACE FUNCTION FRegContacto
+RETURN CLOB
+AS
+-- DEFINIR REGISTRO ANIDADO
+-- DE ESPECÍFICO A LO GENERAL
+Salida CLOB;
+TYPE RegT IS RECORD(
+MiCo VARCHAR2(15),
+MiFo VARCHAR2(10)
+);
+
+TYPE RegG IS RECORD(
+Datos ESTUDIANTES%ROWTYPE,
+Contacto RegT
+);
+
+-- DEFINE VARIABLE DE INSTANCIA
+MiReg RegG;
+
+BEGIN
+FOR I IN (SELECT ID, ROUND(DBMS_RANDOM.VALUE(3117123464,3217123464), 0) Cel FROM ESTUDIANTES )
+LOOP
+Mireg.Datos.id := I.id;
+Mireg.Contacto.MiCo := I.Cel;
+-- dBMS_OUTPUT.PUT_LINE(MiReg.Datos.id||' '||' -- '||MiReg.Contacto.MiCo)
+Salida := Salida||chr(13)||MiReg.Datos.id||' '||' -- '||MiReg.Contacto.MiCo;
+END LOOP;
+RETURN Salida;
+END FRegContacto;
+/
+SHOW ERRORS;
+
+SELECT FRegContacto
+FROM Dual;
+```

@@ -46,7 +46,7 @@ END;
 -- OUT SALIDA			   SÓLO ESCRITURA
 -- IN  OUT ENTRADA/SALIDA  LECTURA/ESCRITURA
 
-CREATE <OR REPLACE> PROCEDURE <identificador>
+CREATE <OR REPLACE> FUNCTION <identificador>
 -- parametros
 (P1 <IN, OUT, IN OUT> <tipo_escalar> <default>,
  P2 <IN, OUT, IN OUT> <tipo_escalar> <default>)
